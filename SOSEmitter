@@ -34,10 +34,10 @@
 // 2. Global Declarations
 
 //    Global Variables
-unsigned long PF3; //Green LED in PF2
 unsigned long PF4; //SW1 in PF4
 unsigned long PF0; //SW2 in PF0
-unsigned char symbol[0];
+unsigned char S[3] = {1,1,1};
+unsigned char O[3] = {2,2,2};
 
 //    Function Prototypes
 void PortF_Init(void);
@@ -53,8 +53,6 @@ void WaitForSW1Low(void);
 int main(void){
   PortF_Init();                                   // Init port PF4 PF3 PF1    
   EnableInterrupts();                             // enable interrupts for the grader  
-	unsigned char S[3] = {1,1,1};
-	unsigned char O[3] = {2,2,2};
 	
   while(1){          
 		WaitForSW1Low();
@@ -63,7 +61,7 @@ int main(void){
 			MorseCodeToLED(S,3);
 			MorseCodeToLED(O,3);
 			MorseCodeToLED(S,3);
-			DelayMs(5000);
+			DelayMs(500);
 			PF0 = GPIO_PORTF_DATA_R&0x01;
 	  } while (PF0 == 0x01);
   }
@@ -105,15 +103,16 @@ void DelayMs(unsigned long msec){
 // Outputs: None
 // Notes:   None
 void MorseCodeToLED(unsigned char mc[], unsigned char size){
-	for(char i = 0; i < size; i++){
-		DelayMs(500);
+	unsigned char i;
+	for(i = 0; i < size; i = i + 1){
+		DelayMs(100);
 		if (mc[i] == 1){                     // If the signal is short, turn ON for 500 ms then turn back OFF
 			GPIO_PORTF_DATA_R |= 0x08;
-			DelayMs(500);
+			DelayMs(50);
 			GPIO_PORTF_DATA_R &= ~0x08;
 		}else if (mc[i] == 2) {              // If the signal is long, turn ON for 2000 ms then turn back OFF
 			GPIO_PORTF_DATA_R |= 0x08;
-			DelayMs(2000);
+			DelayMs(200);
 			GPIO_PORTF_DATA_R &= ~0x08;
 		}
 	}
